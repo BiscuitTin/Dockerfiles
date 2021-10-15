@@ -1,3 +1,4 @@
+# Adapted from https://github.com/nodejs/docker-node/blob/961785b30d9a7cf1d46271e1b71fe0c68be44cff/14/bullseye/Dockerfile
 FROM buildpack-deps:impish
 
 RUN groupadd --gid 1000 node \
