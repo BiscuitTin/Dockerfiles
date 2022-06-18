@@ -1,0 +1,93 @@
+name: Publish shadowsocks-rust container image based on Ubuntu
+
+on:
+  schedule:
+    - cron: '0 17 * * 2'
+  workflow_dispatch:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  REGISTRY: ghcr.io
+  SHADOWSOCKS_RUST_VERSION: v1.14.3
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - cpu: cortex-a7
+            target: armv7-unknown-linux-gnueabihf
+            platform: linux/arm/v7
+          - cpu: cortex-a15
+            target: armv7-unknown-linux-gnueabihf
+            platform: linux/arm/v7
+    permissions:
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Checkout shadowsocks-rust repository
+        uses: actions/checkout@v3
+        with:
+          repository: shadowsocks/shadowsocks-rust
+          ref: ${{env.SHADOWSOCKS_RUST_VERSION}}
+          path: shadowsocks/shadowsocks-rust
+
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly
+          target: ${{matrix.target}}
+          default: true
+
+      - name: Build shadowsocks-rust
+        uses: actions-rs/cargo@v1
+        env:
+          RUSTFLAGS: -C target-cpu=${{matrix.cpu}}
+        with:
+          command: build
+          args: --features stream-cipher --target ${{matrix.target}} --release --manifest-path shadowsocks/shadowsocks-rust/Cargo.toml
+          use-cross: true
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Log into registry ${{env.REGISTRY}}
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v2
+        with:
+          registry: ${{env.REGISTRY}}
+          username: ${{github.actor}}
+          password: ${{secrets.GITHUB_TOKEN}}
+
+      - name: Extract Docker metadata
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: ${{env.REGISTRY}}/${{github.repository_owner}}/shadowsocks-rust
+          tags: |
+            type=raw,latest-${{matrix.cpu}}
+            type=raw,${{env.SHADOWSOCKS_RUST_VERSION}}-${{matrix.cpu}}
+          labels: |
+            org.opencontainers.image.title=shadowsocks-rust container image for ${{matrix.cpu}} based on Ubuntu
+            org.opencontainers.image.description=shadowsocks-rust container image ${{matrix.cpu}} based on Ubuntu
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v3
+        env:
+          TARGET: ${{matrix.target}}
+        with:
+          context: shadowsocks-rust
+          platforms: ${{matrix.platform}}
+          push: ${{github.event_name != 'pull_request'}}
+          tags: ${{steps.meta.outputs.tags}}
+          labels: ${{steps.meta.outputs.labels}}
