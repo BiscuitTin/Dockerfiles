@@ -20,10 +20,8 @@ jobs:
       matrix:
         include:
           - cpu: cortex-a7
-            target: armv7-unknown-linux-gnueabihf
             platform: linux/arm/v7
           - cpu: cortex-a15
-            target: armv7-unknown-linux-gnueabihf
             platform: linux/arm/v7
       fail-fast: false
     permissions:
@@ -39,25 +37,6 @@ jobs:
           repository: shadowsocks/shadowsocks-rust
           ref: ${{env.SHADOWSOCKS_RUST_VERSION}}
           path: shadowsocks/shadowsocks-rust
-
-      - name: Install Rust
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: nightly
-          target: ${{matrix.target}}
-          default: true
-
-      - name: Install cross
-        run: cargo install cross
-
-      - name: Build shadowsocks-rust
-        uses: actions-rs/cargo@v1
-        env:
-          RUSTFLAGS: -C target-cpu=${{matrix.cpu}}
-        with:
-          command: build
-          args: --features stream-cipher --target ${{matrix.target}} --release --manifest-path shadowsocks/shadowsocks-rust/Cargo.toml
-          use-cross: true
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
@@ -88,7 +67,7 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v3
         env:
-          TARGET: ${{matrix.target}}
+          CPU: ${{matrix.cpu}}
         with:
           context: shadowsocks-rust
           platforms: ${{matrix.platform}}
