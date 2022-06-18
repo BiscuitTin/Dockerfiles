@@ -6,6 +6,7 @@ ARG CPU
 
 RUN curl https://sh.rustup.rs -sSf | sh -s -- -y --default-toolchain nightly \
   && . $HOME/.cargo/env \
+  && echo $SHADOWSOCKS_RUST_VERSION \
   && curl -fsSLO --compressed "https://github.com/shadowsocks/shadowsocks-rust/archive/refs/tags/v$SHADOWSOCKS_RUST_VERSION.tar.gz" \
   && tar -xf "v$SHADOWSOCKS_RUST_VERSION.tar.gz" \
   && RUSTFLAGS="-C target-cpu=$CPU" cargo build --features stream-cipher --release --manifest-path shadowsocks-rust-$SHADOWSOCKS_RUST_VERSION/Cargo.toml
