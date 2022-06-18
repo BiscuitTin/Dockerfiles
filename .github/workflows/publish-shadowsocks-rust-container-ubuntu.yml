@@ -67,7 +67,6 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v3
         env:
-          REPO: ${{github.workspace}}/shadowsocks/shadowsocks-rust
           CPU: ${{matrix.cpu}}
         with:
           context: shadowsocks-rust
