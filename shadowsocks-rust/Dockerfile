@@ -1,8 +1,8 @@
 # Adapted from https://github.com/shadowsocks/shadowsocks-rust/blob/92536e6bcea327e4c82e6f495097afca99800de4/Dockerfile
-ARG SHADOWSOCKS_RUST_VERSION
-ARG CPU
 
 FROM buildpack-deps:jammy AS build
+ARG SHADOWSOCKS_RUST_VERSION
+ARG CPU
 
 RUN curl https://sh.rustup.rs -sSf | sh -s -- -y --default-toolchain nightly \
   && . $HOME/.cargo/env \
@@ -11,6 +11,7 @@ RUN curl https://sh.rustup.rs -sSf | sh -s -- -y --default-toolchain nightly \
   && RUSTFLAGS="-C target-cpu=$CPU" cargo build --features stream-cipher --release --manifest-path shadowsocks-rust-$SHADOWSOCKS_RUST_VERSION/Cargo.toml
 
 FROM ubuntu:rolling
+ARG SHADOWSOCKS_RUST_VERSION
 
 USER nobody
 
