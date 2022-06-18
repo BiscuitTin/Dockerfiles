@@ -1,6 +1,4 @@
 # Adapted from https://github.com/shadowsocks/shadowsocks-rust/blob/92536e6bcea327e4c82e6f495097afca99800de4/Dockerfile
-ARG SHADOWSOCKS_RUST_VERSION
-
 FROM buildpack-deps:jammy AS build
 
 RUN curl https://sh.rustup.rs -sSf | sh -s -- -y --default-toolchain nightly \
