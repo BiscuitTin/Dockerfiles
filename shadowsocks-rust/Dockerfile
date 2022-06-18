@@ -1,7 +1,7 @@
 # Adapted from https://github.com/shadowsocks/shadowsocks-rust/blob/92536e6bcea327e4c82e6f495097afca99800de4/Dockerfile
 FROM buildpack-deps:jammy AS build
 
-ADD shadowsocks/shadowsocks-rust .
+ADD $REPO .
 
 RUN curl https://sh.rustup.rs -sSf | sh -s -- -y --default-toolchain nightly \
   && source $HOME/.cargo/env \
