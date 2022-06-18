@@ -25,6 +25,7 @@ jobs:
           - cpu: cortex-a15
             target: armv7-unknown-linux-gnueabihf
             platform: linux/arm/v7
+      fail-fast: false
     permissions:
       packages: write
 
