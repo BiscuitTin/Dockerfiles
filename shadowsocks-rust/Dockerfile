@@ -4,7 +4,7 @@ FROM buildpack-deps:jammy AS build
 ADD $REPO .
 
 RUN curl https://sh.rustup.rs -sSf | sh -s -- -y --default-toolchain nightly \
-  && source $HOME/.cargo/env \
+  && . $HOME/.cargo/env \
   && RUSTFLAGS="-C target-cpu=$CPU" cargo build --features stream-cipher --release
 
 FROM ubuntu:rolling
