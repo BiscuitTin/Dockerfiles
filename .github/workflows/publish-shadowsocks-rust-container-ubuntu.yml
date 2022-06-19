@@ -35,7 +35,6 @@ jobs:
 
     steps:
       - name: Docker on tmpfs
-        if: ${{matrix.platform == 'linux/arm/v7'}}
         uses: JonasAlfredsson/docker-on-tmpfs@v1
 
       - name: Set up QEMU
