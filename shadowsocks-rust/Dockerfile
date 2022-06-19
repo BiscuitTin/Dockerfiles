@@ -1,10 +1,9 @@
-# syntax=docker/dockerfile:labs
 # Adapted from https://github.com/shadowsocks/shadowsocks-rust/blob/92536e6bcea327e4c82e6f495097afca99800de4/Dockerfile
+
 FROM buildpack-deps:jammy AS build
 ARG SHADOWSOCKS_RUST_VERSION
 ARG CPU
 
-RUN --security=insecure mkdir -p $HOME/.cargo && chmod 777 $HOME/.cargo && mount -t tmpfs none $HOME/.cargo
 RUN curl https://sh.rustup.rs -sSf | sh -s -- -y --default-toolchain nightly \
   && . $HOME/.cargo/env \
   && curl -fsSLO --compressed "https://github.com/shadowsocks/shadowsocks-rust/archive/refs/tags/v$SHADOWSOCKS_RUST_VERSION.tar.gz" \
