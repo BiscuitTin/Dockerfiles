@@ -56,8 +56,6 @@ jobs:
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v3
-        env:
-          CPU: ${{matrix.cpu}}
         with:
           context: '{{defaultContext}}:shadowsocks-rust'
           platforms: ${{matrix.platform}}
@@ -65,5 +63,5 @@ jobs:
           tags: ${{steps.meta.outputs.tags}}
           labels: ${{steps.meta.outputs.labels}}
           build-args: |
-            - SHADOWSOCKS_RUST_VERSION
-            - CPU
+            - SHADOWSOCKS_RUST_VERSION=${{env.SHADOWSOCKS_RUST_VERSION}}
+            - CPU=${{matrix.cpu}}
