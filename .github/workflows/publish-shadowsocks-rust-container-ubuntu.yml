@@ -23,12 +23,19 @@ jobs:
             platform: linux/arm/v7
           - cpu: cortex-a15
             platform: linux/arm/v7
+          - cpu: krait
+            platform: linux/arm/v7
+          - cpu: cortex-a57
+            platform: linux/arm64
+          - cpu: cortex-a72
+            platform: linux/arm64
       fail-fast: false
     permissions:
       packages: write
 
     steps:
       - name: Docker on tmpfs
+        if: ${{matrix.platform == 'linux/arm/v7'}}
         uses: JonasAlfredsson/docker-on-tmpfs@v1
 
       - name: Set up QEMU

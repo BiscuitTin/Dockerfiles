@@ -16,6 +16,6 @@ ARG SHADOWSOCKS_RUST_VERSION
 USER nobody
 
 COPY --from=build shadowsocks-rust-$SHADOWSOCKS_RUST_VERSION/target/release/ss* /usr/local/bin
-COPY --from=build shadowsocks-rust-$SHADOWSOCKS_RUST_VERSION/examples/config.json /etc/shadowsocks-rust
+COPY --from=build shadowsocks-rust-$SHADOWSOCKS_RUST_VERSION/examples/config.json /etc/shadowsocks-rust/
 
 ENTRYPOINT [ "ssserver", "--log-without-time", "-c", "/etc/shadowsocks-rust/config.json" ]
