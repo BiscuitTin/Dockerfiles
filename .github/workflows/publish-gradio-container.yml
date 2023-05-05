@@ -68,7 +68,7 @@ jobs:
           PYPI_GRADIO_VERSION: ${{matrix.gradio}}
           DISTRO: ${{matrix.distro}}
           CODENAME: ${{matrix.codename}}
-        if: ${{matrix.distro == python}}
+        if: ${{matrix.distro == 'python'}}
         with:
           context: '{{defaultContext}}:gradio'
           platforms: linux/amd64, linux/386, linux/arm64, linux/arm/v7, linux/arm/v5, linux/ppc64le, linux/s390x
@@ -86,7 +86,7 @@ jobs:
           PYPI_GRADIO_VERSION: ${{matrix.gradio}}
           DISTRO: ${{matrix.distro}}
           CODENAME: ${{matrix.codename}}
-        if: ${{matrix.distro == ghcr.io/biscuittin/python}}
+        if: ${{matrix.distro == 'ghcr.io/biscuittin/python'}}
         with:
           context: '{{defaultContext}}:gradio'
           platforms: linux/amd64, linux/arm64, linux/arm/v7, linux/ppc64le, linux/s390x
