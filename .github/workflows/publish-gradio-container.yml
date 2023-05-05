@@ -30,8 +30,12 @@ jobs:
             codename: bullseye
           - distro: ghcr.io/biscuittin/python
             codename: 3.11-lunar
-          - distro: python:bullseye
-            platform: [linux/386, linux/arm/v5]
+          - distro: python
+            codename: bullseye
+            platform: linux/386
+          - distro: python
+            codename: bullseye
+            platform: linux/arm/v5
 
     permissions:
       packages: write
