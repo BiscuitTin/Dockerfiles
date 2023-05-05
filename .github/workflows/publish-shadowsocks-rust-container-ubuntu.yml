@@ -1,4 +1,4 @@
-name: Publish shadowsocks-rust container image based on Ubuntu
+name: Publish shadowsocks-rust container images based on Ubuntu
 
 on:
   schedule:
