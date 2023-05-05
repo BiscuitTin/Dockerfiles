@@ -1,0 +1,80 @@
+name: Publish Gradio container images
+
+on:
+  schedule:
+    - cron: '0 17 * * 3'
+  workflow_dispatch:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{github.repository_owner}}/gradio
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        gradio: [3.28.3]
+        distro: [python, ghcr.io/biscuittin/python]
+        platform: [linux/amd64, linux/arm64, linux/arm/v7, linux/ppc64le, linux/s390x]
+        include:
+          - distro: python
+            codename: bullseye
+          - distro: ghcr.io/biscuittin/python
+            codename: 3.11-lunar
+          - distro: python:bullseye
+            platform: [linux/386, linux/arm/v5]
+
+    permissions:
+      packages: write
+
+    steps:
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Log into registry ${{env.REGISTRY}}
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v2
+        with:
+          registry: ${{env.REGISTRY}}
+          username: ${{github.actor}}
+          password: ${{secrets.GITHUB_TOKEN}}
+
+      - name: Extract Docker metadata
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: ${{env.REGISTRY}}/${{env.IMAGE_NAME}}
+          tags: |
+            type=raw,${{matrix.gradio}}-${{matrix.distro}}
+          labels: |
+            org.opencontainers.image.title=Gradio ${{matrix.gradio}} container image based on ${{matrix.distro}}
+            org.opencontainers.image.description=Gradio ${{matrix.gradio}} container image based on ${{matrix.distro}}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v4
+        env:
+          PYPI_GRADIO_VERSION: ${{matrix.gradio}}
+          DISTRO: ${{matrix.distro}}
+          CODENAME: ${{matrix.codename}}
+        with:
+          context: '{{defaultContext}}:gradio'
+          platforms: ${{matrix.platform}}
+          push: ${{github.event_name != 'pull_request'}}
+          tags: ${{steps.meta.outputs.tags}}
+          labels: ${{steps.meta.outputs.labels}}
+          build-args: |
+            PYPI_GRADIO_VERSION
+            DISTRO
+            CODENAME
