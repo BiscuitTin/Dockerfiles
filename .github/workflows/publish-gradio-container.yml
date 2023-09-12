@@ -63,7 +63,7 @@ jobs:
             org.opencontainers.image.description=Gradio ${{matrix.gradio}} container image based on ${{matrix.distro}} ${{matrix.codename}}
 
       - name: Build and push Docker image from python
-        uses: docker/build-push-action@v4
+        uses: docker/build-push-action@v5
         env:
           PYPI_GRADIO_VERSION: ${{matrix.gradio}}
           DISTRO: ${{matrix.distro}}
@@ -81,7 +81,7 @@ jobs:
             CODENAME
 
       - name: Build and push Docker image from ghcr.io/biscuittin/python
-        uses: docker/build-push-action@v4
+        uses: docker/build-push-action@v5
         env:
           PYPI_GRADIO_VERSION: ${{matrix.gradio}}
           DISTRO: ${{matrix.distro}}
